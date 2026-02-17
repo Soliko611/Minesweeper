@@ -1,0 +1,29 @@
+body {
+    background-color: black;
+	text-align: center;
+	color: lightgray;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+table {
+	margin: 100px auto;
+	border: 1px solid lightgray;
+}
+
+.cell {
+    
+    padding: 8px;
+    border: 1px solid;
+	width: 40px;
+	height: 40px;
+	font-size: 1.5em;
+    color: aliceblue;
+}
+.cell:hover{
+    color: gold;
+}
+
+.revealed{
+    background-color: bisque;
+    color: black;
+}
