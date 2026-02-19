@@ -1,147 +1,119 @@
-'use strict'
+"use strict"
 
-const MINE = '💣'
-const FLAG = '🚩'
-const NORMALSMILE = '😀'
-const WINNERSMILE = '😎'
-const LOSESMILE = '😵'
+const MINE = "💣"
+const FLAG = "🚩"
+const NORMALSMILE = "😀"
+const WINNERSMILE = "😎"
+const LOSESMILE = "😵"
+const WHITEMODE = "🌞"
+const DARKMODE = "🌚"
 
-
-const gElSmile = document.querySelector('.smile span')//why dont do a gEl for each elemnt?
+const gElSmile = document.querySelector(".smile span")
 
 var gBoard
 var gStartTimer
 var gTimerInterval
 
 const gLevel = {
-    SIZE: 4, //setDIF()//8
-    MINES: 3//14
+  SIZE: 4, //setDIF()//8
+  MINES: 3,
 }
+
 const gGame = {
-    isOn: false,
-    isTimer: false,
-    revealedCount: 0,
-    markedCount: 0,
-    secsPassed: 0,
-    lives: 3
-}//move to cell.js?
+  isOn: false,
+  isTimer: false,
+  revealedCount: 0,
+  markedCount: 0,
+  secsPassed: 0,
+  lives: 3,
+}
 
 function onInit() {
-    gGame.isOn = false
-    gGame.revealedCount = 0
-    gGame.markedCount = 0
-    gGame.secsPassed = 0
-    gGame.lives = 3
-    gGame.isTimer = false
+  gGame.isOn = false
+  gGame.revealedCount = 0
+  gGame.markedCount = 0
+  gGame.secsPassed = 0
+  gGame.lives = 3
 
-    gElSmile.innerText = NORMALSMILE
+  gElSmile.innerText = NORMALSMILE
 
-    resetTimer()
-    gBoard = buildBoard()
-    renderBoard(gBoard)
+  resetTimer()
+  gBoard = buildBoard()
+  renderBoard(gBoard)
+  renderBestTime()
 
+  const elMinesSpan = document.querySelector(".count-mines span")
+  elMinesSpan.innerText = gLevel.MINES
 
-    const elMinesSpan = document.querySelector('.count-mines span')
-    elMinesSpan.innerText = gLevel.MINES
-
-    const elLifeSpan = document.querySelector('.lives span')
-    elLifeSpan.innerText = gGame.lives
-}
-
-function buildBoard() {
-    const board = []
-
-    for (var i = 0; i < gLevel.SIZE; i++) {
-        board.push([])
-
-
-        for (var j = 0; j < gLevel.SIZE; j++) {
-            board[i][j] = {
-                minesAroundCount: 4,
-                isRevealed: false,
-                isMine: false,
-                isMarked: false
-            }
-        }
-    }
-
-    return board
-}
-
-function renderBoard(board) {
-    var strHTML = '<table><tbody>'
-    for (var i = 0; i < board.length; i++) {
-        strHTML += '<tr>'
-        for (var j = 0; j < board[0].length; j++) {
-            
-            const currCell = board[i][j]
-            const className = `cell cell-${i}-${j}`
-            
-            var cellText = ''
-            
-            if (currCell.isRevealed) {
-                cellText = currCell.isMine ? MINE : currCell.minesAroundCount
-                
-                if (cellText === 0) {
-                    cellText = ''
-                }
-            }
-            // else if(currCell.isRevealed === false ) currCell += ''
-            strHTML += `<td class=" ${className}"
-            onclick="onCellClicked(this, ${i} , ${j})"
-            oncontextmenu="onCellMarked(this, ${i} , ${j},event)"
-            >
-            ${cellText}</td>`
-        }
-        strHTML += `</tr>`
-    }
-    strHTML += '</tbody></table>'
-    
-    const elContainer = document.querySelector(`.board-container`)
-    elContainer.innerHTML = strHTML
-}
-
-function checkGameOver() {
-    if ((gLevel.SIZE ** 2 - gLevel.MINES) === gGame.revealedCount) {
-        gElSmile.innerText = WINNERSMILE
-        resetTimer()
-
-        gGame.isOn = false
-        gGame.isTimer = false
-    }
-
+  const elLifeSpan = document.querySelector(".lives span")
+  elLifeSpan.innerText = gGame.lives
 }
 
 function gameOver() {
-
-    gElSmile.innerText = LOSESMILE
-    resetTimer()
-    gGame.isOn = false
-
-
+  gElSmile.innerText = LOSESMILE
+  resetTimer()
+  gGame.isOn = false
 }
 
-function starTimer() {
-    gStartTimer = Date.now()
-    gTimerInterval = setInterval(() => {
-        var diff = Date.now() - gStartTimer
+function setDiffecultiy(size, mines) {
+  gLevel.SIZE = +size
+  gLevel.MINES = +mines
 
-        gGame.secsPassed = Math.floor(diff / 1000)
-        const elTimer = document.querySelector('.timer span') // why not do  a gEltimer and use it
-        elTimer.innerText = gGame.secsPassed
-    }, 1000)
+  onInit()
 }
 
 function resetTimer() {
-    const elTimer = document.querySelector(`.timer span`)
-    elTimer.innerText = gGame.secsPassed
-    clearInterval(gTimerInterval)
-    gGame.isTimer = false
-    
+  const elTimer = document.querySelector(`.timer span`)
+  elTimer.innerText = gGame.secsPassed
+  clearInterval(gTimerInterval)
+  gGame.isTimer = false//delete that timer
 }
-function setDiffecultiy(size, mines) {
-    gLevel.SIZE = +size
-    gLevel.MINES = +mines
 
-    onInit()
+function checkGameOver() {
+  if (gLevel.SIZE ** 2 - gLevel.MINES === gGame.revealedCount && gGame.markedCount === gLevel.MINES) {
+    gElSmile.innerText = WINNERSMILE
+    checkBestScore(gGame.secsPassed)
+    resetTimer()
+    revealMine()
+    gGame.isOn = false
+  
+  }
+}
+
+function revealMine() {
+
+  for (var i = 0; i < gBoard.length; i++) {
+    for (var j = 0; j < gBoard[0].length; j++) {
+      if (gBoard[i][j].isMine) {
+        gBoard[i][j].isMarked = true
+        var elCell = document.querySelector(`.cell-${i}-${j}`)
+        elCell.innerHTML = FLAG
+      }
+    }
+  }
+}
+
+// function toogleDarkMode() {
+
+// }
+function checkBestScore(newTime) {
+  var key = gLevel.SIZE
+  var bestTime = localStorage.getItem(key)
+
+  if (bestTime === null || newTime < +bestTime) {
+    localStorage.setItem(key, newTime)
+    renderBestTime()
+  }
+}
+function renderBestTime() {
+  var key = gLevel.SIZE
+  var bestTime = localStorage.getItem(key)
+
+  var elBestTime = document.querySelector(".best-time span")
+
+  if (bestTime !== null) {
+    elBestTime.innerText = bestTime
+  } else {
+    elBestTime.innerText = "No Best Time"
+  }
 }

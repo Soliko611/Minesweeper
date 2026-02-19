@@ -19,3 +19,15 @@ function findEmptyCell(board) {
     return emptyCells[randIdx]
 }
 
+function starTimer() {
+    gStartTimer = Date.now()
+    gTimerInterval = setInterval(() => {
+        var diff = Date.now() - gStartTimer
+
+        gGame.secsPassed = Math.floor(diff / 1000)
+        const elTimer = document.querySelector('.timer span')
+        elTimer.innerText = gGame.secsPassed
+    }, 1000)
+}
+
+

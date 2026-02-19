@@ -8,31 +8,32 @@
 </head>
 <body onload="onInit()">
     
-
     <h1>Mine Sweeper</h1>
     <h2>Soli Kolet</h2>
 
     <div>
         <div class="count-mines">Mines:<span></span></div>
-        <div class="lives">live:<span></span></div>
+        <div class="lives">Lives:<span></span></div>
         <div class="timer">Timer:<span></span></div>
+        <div class="best-time">best time:<span></span></div>
+        <div class="dark-mode">White</div>
         <button class="smile" onclick="onInit()"><span></span></button></div>
-        <div class="timer"><span></span></div>
+        
     </div>
-
-
-    <button onclick="setDiffecultiy(4, 3)">Beginner</button>
-    <button onclick="setDiffecultiy(8, 14)">Medium</button>
-    <button onclick="setDiffecultiy(12 , 32)">Expert</button>
     
     <div  class="board-container"></div>
     
+        <button onclick="setDiffecultiy(4, 3)">Beginner</button>
+        <button onclick="setDiffecultiy(8, 14)">Medium</button>
+        <button onclick="setDiffecultiy(12 , 32)">Expert</button>
     
+
     <script src="js/utils.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/board.js"></script>
     <script src="js/mine.js"></script>
     <script src="js/cell.js"></script>
-    
+
 
 </body>
 </html>
