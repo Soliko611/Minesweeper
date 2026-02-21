@@ -24,19 +24,23 @@ function renderBoard(board) {
   for (var i = 0; i < board.length; i++) {
     strHTML += "<tr>"
     for (var j = 0; j < board[0].length; j++) {
-      const currCell = board[i][j]
-      const className = `cell cell-${i}-${j}`
+      var currCell = board[i][j]
+      var className = `cell cell-${i}-${j}`
 
       var cellContent = ""
 
       if (currCell.isRevealed) {
+        // var color = gCellsColors[currCell.minesAroundCount]
         cellContent = currCell.isMine ? MINE : currCell.minesAroundCount
+        className += " revealed"
 
         if (cellContent === 0) {
           cellContent = ""
         }
+      } else if (currCell.isMarked) {
+        cellContent = FLAG
       }
-      
+
       strHTML += `<td class=" ${className}"
             onclick="onCellClicked(this, ${i} , ${j})"
             oncontextmenu="onCellMarked(this, ${i} , ${j},event)"

@@ -30,4 +30,30 @@ function starTimer() {
     }, 1000)
 }
 
+function copyBoard(){
+  var newBoard = []
+  for(var i = 0; i < gBoard.length; i++ ){
+    newBoard.push([])
+    for(var j = 0 ; j< gBoard[i].length;j++){
+      newBoard[i][j] = {
+        minesAroundCount: gBoard[i][j].minesAroundCount,
+        isRevealed: gBoard[i][j].isRevealed,
+        isMine: gBoard[i][j].isMine,
+        isMarked: gBoard[i][j].isMarked,
+      }
+    }
+  }
+  return newBoard
+}
+
+function copyGame(){
+  return {
+  isOn: gGame.isOn,
+  isTimer: gGame.isTimer,
+  revealedCount: gGame.revealedCount,
+  markedCount: gGame.markedCount,
+  secsPassed: gGame.secsPassed,
+  lives: gGame.lives,
+}
+}
 

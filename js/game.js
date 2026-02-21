@@ -5,8 +5,8 @@ const FLAG = "🚩"
 const NORMALSMILE = "😀"
 const WINNERSMILE = "😎"
 const LOSESMILE = "😵"
-const WHITEMODE = "🌞"
-const DARKMODE = "🌚"
+const LIGHTMODE = "🌞"
+const NIGHTMODE = "🌚"
 
 const gElSmile = document.querySelector(".smile span")
 
@@ -19,7 +19,7 @@ const gLevel = {
   MINES: 3,
 }
 
-const gGame = {
+var gGame = {
   isOn: false,
   isTimer: false,
   revealedCount: 0,
@@ -35,7 +35,12 @@ function onInit() {
   gGame.secsPassed = 0
   gGame.lives = 3
 
+  gUndoHistory.length = 0
+
   gElSmile.innerText = NORMALSMILE
+
+  const elLightBtn = document.querySelector(".theme-btn span")
+  elLightBtn.innerText = LIGHTMODE
 
   resetTimer()
   gBoard = buildBoard()
@@ -66,36 +71,33 @@ function resetTimer() {
   const elTimer = document.querySelector(`.timer span`)
   elTimer.innerText = gGame.secsPassed
   clearInterval(gTimerInterval)
-  gGame.isTimer = false//delete that timer
+  gGame.isTimer = false //delete that timer
 }
 
 function checkGameOver() {
-  if (gLevel.SIZE ** 2 - gLevel.MINES === gGame.revealedCount && gGame.markedCount === gLevel.MINES) {
+  if (
+    gLevel.SIZE ** 2 - gLevel.MINES === gGame.revealedCount &&
+    gGame.markedCount === gLevel.MINES
+  ) {
     gElSmile.innerText = WINNERSMILE
     checkBestScore(gGame.secsPassed)
     resetTimer()
     revealMine()
     gGame.isOn = false
-  
   }
 }
 
-function revealMine() {
+function toogleLightMode() {
+  const elLightBtn = document.querySelector(".theme-btn span")
+  const elBody = document.body
+  elBody.classList.toggle("light-mode")
 
-  for (var i = 0; i < gBoard.length; i++) {
-    for (var j = 0; j < gBoard[0].length; j++) {
-      if (gBoard[i][j].isMine) {
-        gBoard[i][j].isMarked = true
-        var elCell = document.querySelector(`.cell-${i}-${j}`)
-        elCell.innerHTML = FLAG
-      }
-    }
+  if (elBody.classList.contains("light-mode")) {
+    elLightBtn.innerText = NIGHTMODE
+  } else {
+    elLightBtn.innerText = LIGHTMODE
   }
 }
-
-// function toogleDarkMode() {
-
-// }
 function checkBestScore(newTime) {
   var key = gLevel.SIZE
   var bestTime = localStorage.getItem(key)

@@ -1,34 +1,38 @@
 "use strict"
 
-const gCellsColors = ["", "blue", "red", "green", "black","brown"]
+const gCellsColors = ["", "blue", "red", "green", "black", "brown"]
+const gUndoHistory = []
 
-function renderCell(i,j){
+function renderCell(i, j) {
   var cell = gBoard[i][j]
 
   var elCell = document.querySelector(`.cell-${i}-${j}`)
 
   cell.isRevealed = true
-  
-    var count = cell.minesAroundCount
-    elCell.innerText = count === 0 ? "" : count
-    elCell.style.color = gCellsColors[count]
-    elCell.classList.add('revealed')
-    gGame.revealedCount++
+
+  var count = cell.minesAroundCount
+  elCell.innerText = count === 0 ? "" : count
+  elCell.style.color = gCellsColors[count]
+  elCell.classList.add("revealed")
+  gGame.revealedCount++
 }
 
 function onCellClicked(elCell, i, j) {
   var currCell = gBoard[i][j]
 
-  if (currCell.isMarked || currCell.isRevealed ) return
+  if (currCell.isMarked || currCell.isRevealed) return
 
-  if(!gGame.isOn && gGame.revealedCount > 0 )return
+  if (!gGame.isOn && gGame.revealedCount > 0) return
+  var newCopyBoard = copyBoard()
+  var newCopyGame = copyGame()
+  gUndoHistory.push({ copyBoard: newCopyBoard, copyGame: newCopyGame })
+
   if (gGame.revealedCount === 0) {
     setMines(gBoard, i, j)
     setMinesNegsCount(gBoard)
     starTimer()
 
     gGame.isOn = true
-  
   }
 
   if (currCell.isMine) {
@@ -42,7 +46,7 @@ function onCellClicked(elCell, i, j) {
     return
   }
 
-  renderCell(i,j)
+  renderCell(i, j)
   checkGameOver()
 }
 
@@ -58,7 +62,9 @@ function onCellMarked(elCell, i, j, ev) {
   var minesLeft = gLevel.MINES - gGame.markedCount
 
   if (minesLeft === 0 && !cell.isMarked) return
-
+  var newCopyBoard = copyBoard()
+  var newCopyGame = copyGame()
+  gUndoHistory.push({ copyBoard: newCopyBoard, copyGame: newCopyGame })
   if (!cell.isMarked) {
     cell.isMarked = true
     gGame.markedCount++
@@ -70,6 +76,7 @@ function onCellMarked(elCell, i, j, ev) {
   }
 
   elMinesSpan.innerText = gLevel.MINES - gGame.markedCount
+  checkGameOver()
 }
 
 function setMinesNegsCount(board) {
@@ -100,21 +107,36 @@ function minesAroundCount(board, cellI, cellJ) {
 function expandReveal(board, cellI, cellJ) {
   var cell = board[cellI][cellJ]
 
-    if (cell.isRevealed || cell.isMine || cell.isMarked) return
-    
-     renderCell(cellI,cellJ)
+  if (cell.isRevealed || cell.isMine || cell.isMarked) return
 
-    if(cell.minesAroundCount === 0 ){
+  renderCell(cellI, cellJ)
 
-        for (var i = cellI - 1; i <= cellI + 1; i++) {
-            if (i < 0 || i >= board.length) continue
-            
-            for (var j = cellJ - 1; j <= cellJ + 1; j++) {
-                if (j < 0 || j >= board[0].length) continue
-                if (i === cellI && j === cellJ) continue
-               
-                expandReveal(gBoard, i, j)
-            }
-        }
+  if (cell.minesAroundCount === 0) {
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+      if (i < 0 || i >= board.length) continue
+
+      for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+        if (j < 0 || j >= board[0].length) continue
+        if (i === cellI && j === cellJ) continue
+
+        expandReveal(gBoard, i, j)
+      }
     }
   }
+}
+
+function undoCells() {
+  if (gUndoHistory.length > 0) {
+    var lastPlay = []
+    lastPlay = gUndoHistory.pop()
+    gBoard = lastPlay.copyBoard
+    gGame = lastPlay.copyGame
+
+    renderBoard(gBoard)
+    document.querySelector(".count-mines span").innerText =
+      gLevel.MINES - gGame.markedCount
+    document.querySelector(".lives span").innerText = gGame.lives
+    document.querySelector(".smile span").innerText = NORMALSMILE
+    document.querySelector(".timer span").innerText = gGame.secsPassed
+  }
+}
