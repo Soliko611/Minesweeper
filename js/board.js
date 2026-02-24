@@ -12,6 +12,7 @@ function buildBoard() {
         isRevealed: false,
         isMine: false,
         isMarked: false,
+        isBomb: false,
       }
     }
   }
@@ -28,10 +29,13 @@ function renderBoard(board) {
       var className = `cell cell-${i}-${j}`
 
       var cellContent = ""
-
+      var color = ''
+      
       if (currCell.isRevealed) {
-        // var color = gCellsColors[currCell.minesAroundCount]
-        cellContent = currCell.isMine ? MINE : currCell.minesAroundCount
+        var count = currCell.minesAroundCount
+        color = `color: ${gCellsColors[count]};`
+        cellContent = currCell.isMine? MINE : currCell.minesAroundCount
+
         className += " revealed"
 
         if (cellContent === 0) {
@@ -39,9 +43,12 @@ function renderBoard(board) {
         }
       } else if (currCell.isMarked) {
         cellContent = FLAG
+      } else if (currCell.isBomb) {
+        cellContent = BOBMMINE
       }
 
       strHTML += `<td class=" ${className}"
+            style="${color}"
             onclick="onCellClicked(this, ${i} , ${j})"
             oncontextmenu="onCellMarked(this, ${i} , ${j},event)"
             >

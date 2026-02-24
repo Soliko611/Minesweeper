@@ -44,3 +44,34 @@ function revealMine() {
     }
   }
 }
+
+function eliminateMine() {
+  if (gGame.revealedCount === 0) return
+  if(!gGame.isOn) return
+  for (var i = 0; i < 3; i++) {
+    var randCellMine = arrayMine(gBoard)
+    gBoard[randCellMine.i][randCellMine.j].isMine = false
+    gBoard[randCellMine.i][randCellMine.j].isBomb = true
+  }
+  setMinesNegsCount(gBoard)
+  renderBoard(gBoard)
+  const elFire = document.querySelector(".mine-exterminator")
+  elFire.disabled = true
+}
+
+function arrayMine() {
+  var arrayMine = []
+  for (var i = 0; i < gBoard.length; i++) {
+    for (var j = 0; j < gBoard[0].length; j++) {
+      var currCell = gBoard[i][j]
+
+      if (currCell.isMine) {
+        arrayMine.push({ i, j })
+      }
+    }
+  }
+  var randIdx = getRandomIntInclusive(0, arrayMine.length - 1)
+  var randomCellMine = arrayMine[randIdx]
+  arrayMine.splice(randIdx, 1)
+  return randomCellMine
+}

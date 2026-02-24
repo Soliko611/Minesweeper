@@ -23,9 +23,9 @@ function onCellClicked(elCell, i, j) {
   if (currCell.isMarked || currCell.isRevealed) return
 
   if (!gGame.isOn && gGame.revealedCount > 0) return
-  var newCopyBoard = copyBoard()
-  var newCopyGame = copyGame()
-  gUndoHistory.push({ copyBoard: newCopyBoard, copyGame: newCopyGame })
+  var curCopyBoard = copyBoard()
+  var currCopyGame = copyGame()
+  gUndoHistory.push({ copyBoard: curCopyBoard, copyGame: currCopyGame })
 
   if (gGame.revealedCount === 0) {
     setMines(gBoard, i, j)
@@ -126,6 +126,7 @@ function expandReveal(board, cellI, cellJ) {
 }
 
 function undoCells() {
+  if(!gGame.isOn) return
   if (gUndoHistory.length > 0) {
     var lastPlay = []
     lastPlay = gUndoHistory.pop()
@@ -133,10 +134,12 @@ function undoCells() {
     gGame = lastPlay.copyGame
 
     renderBoard(gBoard)
+    
+    
     document.querySelector(".count-mines span").innerText =
       gLevel.MINES - gGame.markedCount
     document.querySelector(".lives span").innerText = gGame.lives
     document.querySelector(".smile span").innerText = NORMALSMILE
-    document.querySelector(".timer span").innerText = gGame.secsPassed
+    // document.querySelector(".timer span").innerText = gGame.secsPassed
   }
 }

@@ -7,6 +7,7 @@ const WINNERSMILE = "😎"
 const LOSESMILE = "😵"
 const LIGHTMODE = "🌞"
 const NIGHTMODE = "🌚"
+const BOBMMINE = "💥"
 
 const gElSmile = document.querySelector(".smile span")
 
@@ -34,6 +35,9 @@ function onInit() {
   gGame.markedCount = 0
   gGame.secsPassed = 0
   gGame.lives = 3
+
+  const elFire = document.querySelector(".mine-exterminator")
+  elFire.disabled = false
 
   gUndoHistory.length = 0
 
@@ -71,7 +75,7 @@ function resetTimer() {
   const elTimer = document.querySelector(`.timer span`)
   elTimer.innerText = gGame.secsPassed
   clearInterval(gTimerInterval)
-  gGame.isTimer = false //delete that timer
+  gStartTimer = null
 }
 
 function checkGameOver() {
